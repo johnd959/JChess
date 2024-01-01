@@ -32,6 +32,7 @@ public class Turn {
 
             boolean check = player.inCheck;
 
+            // redundant?
             if(check){
                 System.out.println("Player " + player.playerNum + ", you are in check");
                 boolean end = false;
@@ -40,8 +41,8 @@ public class Turn {
                     try {
                         processCommand(playerArgs, player);
                     } catch (InvalidMoveException exception) {
-                        System.out.println(exception.getMessage());
                         board.renderBoard();
+                        System.out.println(exception.getMessage());
                         continue;
                     }
                     end = true;
@@ -56,8 +57,8 @@ public class Turn {
                          processCommand(playerArgs, player);
                     }
                     catch (InvalidMoveException exception){
-                        System.out.println(exception.getMessage());
                         board.renderBoard();
+                        System.out.println(exception.getMessage());
                         continue;
                     }
                     end = true;

@@ -21,7 +21,7 @@ public class Game {
 
 
     public void StartGame(){
-        System.out.println("Welcome to chess with myself (for now)");
+        System.out.println("Welcome to chess with myself (for now) \uD83D\uDE05");
         boolean flipFlop = true;
         while(isOngoing()){
             if(flipFlop){
