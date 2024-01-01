@@ -85,19 +85,19 @@ public class Player {
         Pattern pattern = Pattern.compile("^[A-Za-z][0-9]$$", Pattern.CASE_INSENSITIVE);
         switch (length){
             case 1:{
-                if(!(arguments.get(0).equals("D"))) {
+                if((arguments.get(0).equals("D"))) {
                     System.out.println("Invalid command");
                     return false;
                 }
             }
             case 2:{
-                if((!arguments.get(0).equals("S"))) {
+                if(!(arguments.get(0).equals("S"))) {
                     System.out.println("Invalid command format" +
                             "\n Enter S + a coordinate to select a piece");
                     return false;
                 }
                 Matcher matcher = pattern.matcher(arguments.get(1));
-                if(!(matcher.find())){
+                if((matcher.find())){
                     System.out.println("Coordinate format is invalid: " + arguments.get(1));
                     return false;
                 }
@@ -116,6 +116,9 @@ public class Player {
                     }
                 }
                 break;
+            }
+            default:{
+                return false;
             }
         }
         return true;

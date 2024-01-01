@@ -33,7 +33,7 @@ public class Turn {
             boolean check = player.inCheck;
 
             if(check){
-                System.out.println("Player " + player.playerNum + " ,you are in check");
+                System.out.println("Player " + player.playerNum + ", you are in check");
                 boolean end = false;
                 while(!end) {
                     playerArgs = player.makeCommand();
@@ -107,7 +107,7 @@ public class Turn {
 
         //checking if the selected piece is that of the manipulator
         if(player.playerNum != selected.getPlayer()){
-            throw new InvalidMoveException("This piece does not belong to " + player.playerNum);
+            throw new InvalidMoveException("This piece does not belong to player " + player.playerNum);
         }
 
         //getting moves for the piece selected

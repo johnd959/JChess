@@ -62,6 +62,7 @@ public class Board {
     }
 
     public void renderBoard(){
+        System.out.println("\n");
         for(int y = Board.height; y >= 0; y--){
             for(int x = 0; x <= Board.width; x++){
                 if(x == 0 && y == 0){
@@ -84,6 +85,18 @@ public class Board {
             System.out.println();
         }
         System.out.println();
+        System.out.print("Player 1: ");
+        for(Piece piece: disqualifiedPieces){
+            if(piece.getPlayer() == 2)
+                System.out.print(piece.display + SpecialCharacters.letterSpace);
+        }
+        System.out.println();
+        System.out.print("Player 2: ");
+        for(Piece piece : disqualifiedPieces){
+            if(piece.getPlayer() == 1)
+                System.out.print(piece.display + SpecialCharacters.letterSpace);
+        }
+        System.out.println("\n");
     }
 
     private void addPiece(Piece piece){
