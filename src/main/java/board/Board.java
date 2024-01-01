@@ -2,6 +2,7 @@ package board;
 
 
 import characters.SpecialCharacters;
+import game.exceptions.EmptySpotException;
 import pieces.*;
 
 import java.io.PrintWriter;
@@ -12,9 +13,9 @@ public class Board {
     public static final int height = 8;
     public static final int width = 8;
 
-    private ArrayList<Piece> player1Pieces;
-    private ArrayList<Piece> player2Pieces;
-    private ArrayList<Piece> disqualifiedPieces;
+    protected ArrayList<Piece> player1Pieces;
+    protected ArrayList<Piece> player2Pieces;
+    protected ArrayList<Piece> disqualifiedPieces;
 
     public Spot[][] spotMatrix;
 
@@ -23,6 +24,7 @@ public class Board {
         spotMatrix = new Spot[height + 2][width + 2];
         this.player1Pieces = new ArrayList<>();
         this.player2Pieces = new ArrayList<>();
+        this.disqualifiedPieces = new ArrayList<>();
         initializeBoard();
     }
 
@@ -32,6 +34,12 @@ public class Board {
         spotMatrix[pieceLocation[1]][pieceLocation[0]].piece = null;
         if(destinationPiece != null){
             disqualifiedPieces.add(destinationPiece);
+            if(destinationPiece.getPlayer() == 1){
+                player1Pieces.remove(destinationPiece);
+            }
+            else if(destinationPiece.getPlayer() == 2){
+                player2Pieces.remove(destinationPiece);
+            }
         }
         spotMatrix[newLocation[1]][newLocation[0]].piece = pieceToMove;
         pieceToMove.move(newLocation);
@@ -89,6 +97,22 @@ public class Board {
         spotMatrix[pieceLocation[1]][pieceLocation[0]].piece = piece;
     }
 
+    /**
+     *
+     * @param location int[]{x,y}
+     * @return A piece at the location
+     * @throws EmptySpotException
+     */
+    public Piece getPieceAt(int[] location) throws EmptySpotException {
+        Piece toBeReturned = spotMatrix[location[1]][location[0]].piece;
+
+        if(toBeReturned == null){
+            throw new EmptySpotException("There is no piece located at " + location[0] + "," + location[1]);
+        }
+
+        return toBeReturned;
+    }
+
     private void initializeBoard(){
         //initializing board with spots
         for(int y = 1; y <= Board.height; y++){
@@ -134,5 +158,9 @@ public class Board {
 
     public ArrayList<Piece> getDisqualifiedPieces() {
         return disqualifiedPieces;
+    }
+
+    public void setDisqualifiedPieces(ArrayList<Piece> disqualifiedPieces) {
+        this.disqualifiedPieces = disqualifiedPieces;
     }
 }

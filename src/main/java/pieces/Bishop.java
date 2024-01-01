@@ -61,13 +61,13 @@ public class Bishop extends Piece{
             ybr--;
         }
 
-        //getting top and bottom diagonals left of the bishop
+        //getting top diagonal left of the bishop
         int xl = x - 1;
         int ytl = y + 1;
 
         while(xl >= 1) {
-            if (xl <= Board.height) {
-                if (spotMatrix[xl][xl].piece != null) {
+            if (ytl <= Board.height) {
+                if (spotMatrix[ytl][xl].piece != null) {
                     collisions.add(new int[]{xl, ytl});
                     break;
                 } else

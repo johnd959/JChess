@@ -1,14 +1,14 @@
 package pieces;
 
-import java.util.ArrayList;
 import board.Board;
 import board.Spot;
 
-public class Pawn extends Piece {
+import java.util.ArrayList;
 
-    private int travelDistance = 2;
+public class BPawn extends Piece{
+    private static int travelDistance = 2;
 
-    public Pawn(int[] location, int player) {
+    public BPawn(int[] location, int player) {
         super('\u265F', "Pawn", new ArrayList<>(), location, player );
         if (player == 1){
             display = '\u265F';
@@ -22,23 +22,19 @@ public class Pawn extends Piece {
     @Override
     public void getNewMoves(Spot[][] spotMatrix){
         moves.clear();
-        //creating a 3x1 box in front of the pawn piece and filtering out the invalid moves
-        // x x x
+        //creating a 3x1 box behind the pawn piece and filtering out the invalid moves
         //   p
+        // x x x
         int xtl = location[0] - 1;
-        int y = location[1] + 1;
-
-        if(player == 2){
-            y = location[1] - 1;
-        }
+        int y = location[1] - 1;
 
         for(int x = xtl; x <= location[0] + 1; x++){
             //if the x values are within the horizontal bounds of the board
             if(x >= 1 && x <= Board.width){
-                    // if the y values are within the vertical bounds of the board
+                // if the y values are within the vertical bounds of the board
                 if (y >= 1 && y <= Board.height) {
-                        // if the diagonal spots in front of the pawn are occupied
-                    if(spotMatrix[y][x].piece != null && location[0] != x) {
+                    // if the diagonal spots in front of the pawn are occupied
+                    if(spotMatrix[y][x].piece != null && location[0] != x && location[1] + 1 == y) {
                         Piece collision = spotMatrix[y][x].piece;
                         if (collision.getPlayer() != player)
                             moves.add(new int[]{x, y});
@@ -48,11 +44,7 @@ public class Pawn extends Piece {
                         {
                             moves.add(new int[]{x,y});
                             if(travelDistance == 2)
-                                if(player == 1)
-                                    moves.add(new int[]{x, y + 1});
-                                else
-                                    moves.add(new int[]{x, y - 1});
-
+                                moves.add(new int[]{x, y + 1});
                         }
                     }
                 }
@@ -62,9 +54,9 @@ public class Pawn extends Piece {
 
     @Override
     public void move(int[] location) {
-         this.location = location;
-         this.moved++;
-         travelDistance = 1;
+        this.location = location;
+        this.moved++;
+        travelDistance = 1;
     }
 
 

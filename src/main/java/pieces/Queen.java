@@ -26,7 +26,7 @@ public class Queen extends Piece {
         ArrayList<int[]> collisions = new ArrayList<>();
 
 
-        //getting top diagonal right of the bishop
+        //getting top diagonal right of the queen
         int xr = x + 1;
         int ytr = y + 1;
         while (xr <= Board.width) {
@@ -44,7 +44,7 @@ public class Queen extends Piece {
             xr++;
             ytr++;
         }
-        //getting bottom diagonal right of the bishop
+        //getting bottom diagonal right of the queen
         xr = x + 1;
         int ybr = y - 1;
         while (xr <= Board.width) {
@@ -59,13 +59,13 @@ public class Queen extends Piece {
             ybr--;
         }
 
-        //getting top and bottom diagonals left of the bishop
+        //getting top diagonal left of the queen
         int xl = x - 1;
         int ytl = y + 1;
 
         while(xl >= 1) {
-            if (xl <= Board.height) {
-                if (spotMatrix[xl][xl].piece != null) {
+            if (ytl <= Board.height) {
+                if (spotMatrix[ytl][xl].piece != null) {
                     collisions.add(new int[]{xl, ytl});
                     break;
                 } else
@@ -74,6 +74,8 @@ public class Queen extends Piece {
             xl--;
             ytl++;
         }
+
+        //getting bottom diagonal left of the queen
         xl = x - 1;
         int ybl = y - 1;
         while(xl >= 1){

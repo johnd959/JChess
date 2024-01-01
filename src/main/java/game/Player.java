@@ -36,8 +36,8 @@ public class Player {
 
     public ArrayList<String> makeCommand(){
         String message = "Player " + playerNum + " Please make a move" +
-                "\nEnter S and coordinates (eg. A1) to select a piece" +
-                "\nEnter D to deselect a piece";
+                "\nEnter M and two coordinates to make a move" +
+                "\nEG. M A1 B2 (Move Piece at A1 to B2)";
 
         ArrayList<String> arguments = getCommand(message);
         while(!(validateArguments(arguments, arguments.size()))){
@@ -68,7 +68,7 @@ public class Player {
         for (int i = 0; i < input.length; i++)
         {
             if(Character.isSpaceChar(input[i])){
-                argList.add(builder.toString());
+                argList.add(builder.toString().strip());
                 builder.setLength(0);
             }
 
@@ -77,12 +77,12 @@ public class Player {
             else
                 builder.append(input[i]);
         }
-        argList.add(builder.toString());
+        argList.add(builder.toString().strip());
         return argList;
     }
 
     private boolean validateArguments(ArrayList<String> arguments, int length){
-        Pattern pattern = Pattern.compile("[ABCDEFGH][1-8]", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^[A-Za-z][0-9]$$", Pattern.CASE_INSENSITIVE);
         switch (length){
             case 1:{
                 if(!(arguments.get(0).equals("D"))) {
