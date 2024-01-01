@@ -180,12 +180,12 @@ public class Board {
 
         //pieces for player 1
         addPiece(new Rook(new int[]{1,1}, 1));
-        //addPiece(new Knight(new int[]{2,1}, 1));
-        //addPiece(new Bishop(new int[]{3,1}, 1));
-        //addPiece(new Queen(new int[]{4,1}, 1));
+        addPiece(new Knight(new int[]{2,1}, 1));
+        addPiece(new Bishop(new int[]{3,1}, 1));
+        addPiece(new Queen(new int[]{4,1}, 1));
         addPiece(new King(new int[]{5,1}, 1));
-        //addPiece(new Bishop(new int[]{6,1}, 1));
-        //addPiece(new Knight(new int[]{7,1}, 1));
+        addPiece(new Bishop(new int[]{6,1}, 1));
+        addPiece(new Knight(new int[]{7,1}, 1));
         addPiece(new Rook(new int[]{8,1}, 1));
         for(int x = 1; x <= Board.width; x++){
             addPiece(new Pawn(new int[]{x, 2}, 1));

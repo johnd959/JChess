@@ -26,7 +26,7 @@ public class Player {
 
     public ArrayList<String> makeCommand(){
         String message = "Player " + playerNum + " Please make a move" +
-                "\nEnter M and two coordinates to make a move" +
+                "\nEnter M and two coordinates to make a move — Enter C and the coordinate of a rook to castle" +
                 "\nEG. M A1 B2 (Move Piece at A1 to B2)";
 
         ArrayList<String> arguments = getCommand(message);
@@ -38,6 +38,7 @@ public class Player {
 
     private ArrayList<String> getCommand(String message){
         System.out.println(message);
+        System.out.print("Move: ");
         Scanner scanner = new Scanner(System.in);
         char[] input = scanner.nextLine().toCharArray();
         ArrayList<String> argList = new ArrayList<>();
