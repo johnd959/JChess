@@ -35,9 +35,10 @@ public class Game {
         }
     }
     private void InitializeGame() {
-        this.player1 = new Player(1);
-        this.player2 = new Player(2);
         this.board = new Board();
+        this.player1 = new Player(1, board.getPlayer1Pieces());
+        this.player2 = new Player(2, board.getPlayer2Pieces());
+
     }
 
     private boolean isOngoing() {

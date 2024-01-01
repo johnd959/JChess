@@ -20,6 +20,15 @@ public class Knight extends Piece{
 
     @Override
     public void getNewMoves(Spot[][] spotMatrix){
+
+        //getting 2x2 boxes around the knight piece and filtering the moves where the x's and y's do equal (the diagonals)
+        // 1 xx xx           --->            x|x
+        // 2 xx xx                          x-|-x
+        // 3   k                              k
+        // 4 xx xx                          x-|-x
+        // 5 xx xx                           x|x
+        //   12 3 45
+
         if(!moves.isEmpty())
             moves.clear();
         for(int x = -2; x <= 2; x++){

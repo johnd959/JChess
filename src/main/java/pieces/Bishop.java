@@ -91,12 +91,6 @@ public class Bishop extends Piece{
             ybl--;
         }
 
-        //validate if collisions are opponent pieces and add to available moves
-        for(int[] collision : collisions){
-            if(spotMatrix[collision[1]][collision[0]].piece.getPlayer() != player){
-                moves.add(collision);
-            }
-        }
     }
 
     @Override

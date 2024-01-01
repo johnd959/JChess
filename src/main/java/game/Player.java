@@ -12,26 +12,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Player {
-    public Piece getSelectedPiece() {
-        return selectedPiece;
-    }
-
-    public void setSelectedPiece(Piece selectedPiece) {
-        this.selectedPiece = selectedPiece;
-    }
-
     public final int playerNum;
-    private Piece selectedPiece;
 
     public boolean inCheck;
 
-    public Player(int playerNum){
+    private ArrayList<Piece> pieces;
+
+    public Player(int playerNum, ArrayList<Piece> pieces){
         this.playerNum = playerNum;
         this.inCheck = false;
-    }
-
-    public ArrayList<String> promptMove(){
-        return makeCommand();
+        this.pieces = pieces;
     }
 
     public ArrayList<String> makeCommand(){
@@ -44,19 +34,6 @@ public class Player {
             arguments = getCommand(message);
         }
         return arguments;
-    }
-    //prompt the player for a selection in the form of coordinates
-    public ArrayList<int[]> getSelection(ArrayList<String> arguments){
-        ArrayList<int[]> selectedCoordinates = convertCoordinates(arguments);
-        return selectedCoordinates;
-    }
-    public Move makeMove(){
-        String message = "Enter M + origin + destination to make a move";
-        ArrayList<String> arguments = getCommand(message);
-        while(arguments.size() != 3){
-            arguments = getCommand(message);
-        }
-        return new Move(arguments);
     }
 
     private ArrayList<String> getCommand(String message){
@@ -82,7 +59,7 @@ public class Player {
     }
 
     private boolean validateArguments(ArrayList<String> arguments, int length){
-        Pattern pattern = Pattern.compile("^[A-Za-z][0-9]$$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^[A-Za-z][0-9]$", Pattern.CASE_INSENSITIVE);
         switch (length){
             case 1:{
                 if((arguments.get(0).equals("D"))) {
@@ -91,13 +68,13 @@ public class Player {
                 }
             }
             case 2:{
-                if(!(arguments.get(0).equals("S"))) {
+                if(!(arguments.get(0).equals("C"))) {
                     System.out.println("Invalid command format" +
-                            "\n Enter S + a coordinate to select a piece");
+                            "\n Enter C + a rook's coordinate");
                     return false;
                 }
                 Matcher matcher = pattern.matcher(arguments.get(1));
-                if((matcher.find())){
+                if(!(matcher.find())){
                     System.out.println("Coordinate format is invalid: " + arguments.get(1));
                     return false;
                 }
@@ -133,4 +110,9 @@ public class Player {
         }
         return intCoordinates;
     }
+
+    public ArrayList<Piece> getPieces() {
+        return pieces;
+    }
+
 }

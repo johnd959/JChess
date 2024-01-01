@@ -23,9 +23,7 @@ public class Rook extends Piece{
         for (int i = location[0] + 1; i <= Board.width; i++){
             Piece collision = spotMatrix[location[1]][i].piece;
             if(collision != null){
-                if(collision.getPlayer() != player){
-                    moves.add(new int[]{i, location[1]});
-                }
+                moves.add(new int[]{i, location[1]});
                 break;
             }
             moves.add(new int[]{i, location[1]});
@@ -33,9 +31,7 @@ public class Rook extends Piece{
         for (int j = location[0] - 1; j >= 1; j--){
             Piece collision = spotMatrix[location[1]][j].piece;
             if(collision != null){
-                if(collision.getPlayer() != player){
-                    moves.add(new int[]{j, location[1]});
-                }
+                moves.add(new int[]{j, location[1]});
                 break;
             }
             moves.add(new int[]{j, location[1]});
@@ -44,9 +40,7 @@ public class Rook extends Piece{
         for (int k = location[1] + 1; k <= Board.height; k++){
             Piece collision = spotMatrix[k][location[0]].piece;
             if(collision != null){
-                if(collision.getPlayer() != player){
-                    moves.add(new int[]{location[0], k});
-                }
+                moves.add(new int[]{location[0], k});
                 break;
             }
             moves.add(new int[]{location[0], k});
@@ -54,9 +48,7 @@ public class Rook extends Piece{
         for (int l = location[1] - 1; l >= 1; l--){
             Piece collision = spotMatrix[l][location[0]].piece;
             if(collision != null){
-                if(collision.getPlayer() != player){
-                    moves.add(new int[]{location[0], l});
-                }
+                moves.add(new int[]{location[0], l});
                 break;
             }
             moves.add(new int[]{location[0], l});
