@@ -178,21 +178,21 @@ public class Board {
 
         //pieces for player 1
         addPiece(new Rook(new int[]{1,1}, 1));
-        addPiece(new Knight(new int[]{2,1}, 1));
-        addPiece(new Bishop(new int[]{3,1}, 1));
+        //addPiece(new Knight(new int[]{2,1}, 1));
+        //addPiece(new Bishop(new int[]{3,1}, 1));
         addPiece(new Queen(new int[]{4,1}, 1));
         addPiece(new King(new int[]{5,1}, 1));
-        addPiece(new Bishop(new int[]{6,1}, 1));
-        addPiece(new Knight(new int[]{7,1}, 1));
+        //addPiece(new Bishop(new int[]{6,1}, 1));
+        //addPiece(new Knight(new int[]{7,1}, 1));
         addPiece(new Rook(new int[]{8,1}, 1));
         for(int x = 1; x <= Board.width; x++){
             addPiece(new Pawn(new int[]{x, 2}, 1));
         }
 
-        //pieces for player one
-        for(int x = 1; x <= Board.width; x++){
-            addPiece(new Pawn(new int[]{x, 7}, 2));
-        }
+        //pieces for player 2
+        //for(int x = 1; x <= Board.width; x++){
+        //    addPiece(new Pawn(new int[]{x, 7}, 2));
+        //}
         addPiece(new Rook(new int[]{1,8}, 2));
         addPiece(new Knight(new int[]{2,8}, 2));
         addPiece(new Bishop(new int[]{3,8}, 2));
@@ -242,7 +242,7 @@ public class Board {
             this.movePiece(origin, destination);
         } catch (InvalidMoveException exception) {
             // if the location is the same, return 0 because this would not affect check
-            return null;
+            return new AbstractMap.SimpleEntry<Integer, ArrayList<Piece>>(0, null);
         }
 
 
@@ -367,6 +367,8 @@ public class Board {
             return false;
         }
 
+        boolean checkmate = true;
+
         ArrayList<int[]> areaInCheck = new ArrayList<>();
         for(Piece piece : piecesCheckingPlayer){
             piece.getNewMoves(spotMatrix);
@@ -376,8 +378,13 @@ public class Board {
         // and the moves of those pieces
         HashMap<Piece, ArrayList<int[]>> checkAreaCollisionMoves = new HashMap<Piece, ArrayList<int[]>>();
 
+        Piece playerKing = null;
+
         // for every piece that a player has
         for(Piece piece : player.getPieces()){
+
+            if(piece.name.equals(("King")))
+                playerKing = piece;
 
             //gets its moves
             piece.getNewMoves(spotMatrix);
@@ -409,12 +416,30 @@ public class Board {
                 if(isCheck(piece.getKey().getLocation(), move, player).getKey() == 0){
                     // break out of all loops and return false if there is even one
                     // move that prevents check
-                    return false;
+                    checkmate = false;
                 }
             }
         }
+
+        //check if the king making a move would remove it from being checked
+        if(playerKing != null){
+
+            // for every move the king can make
+            playerKing.getNewMoves(spotMatrix);
+            ArrayList<int[]> moves = (ArrayList<int[]>) playerKing.getMoves().clone();
+            int[] kingLocation = playerKing.getLocation();
+
+            for(int[] move : moves){
+
+                // if the kind made that move means getting it out of check
+                if(isCheck(kingLocation, move, player).getKey() == 0){
+                    checkmate = false;
+                }
+            }
+        }
+
         // if none of the moves prevent check, then it is checkmate
-        return true;
+        return checkmate;
     }
 
     public boolean castle(int[] rookLocation, Player player) throws InvalidMoveException {

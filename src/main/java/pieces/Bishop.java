@@ -91,6 +91,11 @@ public class Bishop extends Piece{
             ybl--;
         }
 
+        for(int[] collision : collisions){
+            //if collision piece is not that of the players
+            if(spotMatrix[collision[1]][collision[0]].piece.getPlayer() != player)
+                moves.add(collision);
+        }
     }
 
     @Override

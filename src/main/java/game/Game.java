@@ -32,10 +32,10 @@ public class Game {
                 }
                 else {
                     new Turn(player2, player1, board).start();
-                    flipFlop = true;
+//                    flipFlop = true;
                 }
             }catch (CheckmateException exception){
-                System.out.println(exception.getMessage());
+                System.out.println(exception.getMessage() + "\n Thank you for playing!");
                 board.renderBoard();
                 break;
             }

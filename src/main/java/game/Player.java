@@ -63,7 +63,7 @@ public class Player {
     }
 
     private boolean validateArguments(ArrayList<String> arguments, int length){
-        Pattern pattern = Pattern.compile("^[A-Za-z][0-9]$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^[ABCDEFGH][0-9]$", Pattern.CASE_INSENSITIVE);
         switch (length){
             case 1:{
                 if(!(arguments.get(0).equals("F"))) {
