@@ -18,10 +18,13 @@ public class Player {
 
     private ArrayList<Piece> pieces;
 
+    public ArrayList<Piece> checkingPieces;
+
     public Player(int playerNum, ArrayList<Piece> pieces){
         this.playerNum = playerNum;
         this.inCheck = false;
         this.pieces = pieces;
+        this.checkingPieces = null;
     }
 
     public ArrayList<String> makeCommand(){
@@ -60,13 +63,14 @@ public class Player {
     }
 
     private boolean validateArguments(ArrayList<String> arguments, int length){
-        Pattern pattern = Pattern.compile("^[A-Za-z][0-9]$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^[ABCDEFGH][0-9]$", Pattern.CASE_INSENSITIVE);
         switch (length){
             case 1:{
-                if((arguments.get(0).equals("D"))) {
+                if(!(arguments.get(0).equals("F"))) {
                     System.out.println("Invalid command");
                     return false;
                 }
+                break;
             }
             case 2:{
                 if(!(arguments.get(0).equals("C"))) {
@@ -101,17 +105,6 @@ public class Player {
         }
         return true;
     }
-
-    private ArrayList<int[]> convertCoordinates(List<String> stringCoordinates){
-        ArrayList<int[]> intCoordinates = new ArrayList<>();
-        for(String coordinate : stringCoordinates){
-            int x = (int) coordinate.substring(0).charAt(0) - SpecialCharacters.letterDifference;
-            int y = Integer.parseInt(coordinate.substring(1));
-            intCoordinates.add(new int[]{x, y});
-        }
-        return intCoordinates;
-    }
-
     public ArrayList<Piece> getPieces() {
         return pieces;
     }

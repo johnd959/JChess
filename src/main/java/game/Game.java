@@ -1,6 +1,7 @@
 package game;
 
 import board.Board;
+import game.exceptions.CheckmateException;
 import pieces.King;
 import pieces.Piece;
 
@@ -23,14 +24,20 @@ public class Game {
     public void StartGame(){
         System.out.println("Welcome to chess with myself (for now) \uD83D\uDE05");
         boolean flipFlop = true;
-        while(isOngoing()){
-            if(flipFlop){
-                new Turn(player1, player2, board).start();
-                flipFlop = false;
-            }
-            else {
-                new Turn(player2, player1, board).start();
-                flipFlop = true;
+        while(true){
+            try{
+                if(flipFlop){
+                    new Turn(player1, player2, board).start();
+                    flipFlop = false;
+                }
+                else {
+                    new Turn(player2, player1, board).start();
+//                    flipFlop = true;
+                }
+            }catch (CheckmateException exception){
+                System.out.println(exception.getMessage() + "\n Thank you for playing!");
+                board.renderBoard();
+                break;
             }
         }
     }
@@ -41,19 +48,4 @@ public class Game {
 
     }
 
-    private boolean isOngoing() {
-        boolean king1 = false;
-        boolean king2 = false;
-
-        for(Piece piece : board.getPlayer1Pieces()){
-            if(piece.getClass().equals(King.class))
-                king1 = true;
-        }
-
-        for(Piece piece: board.getPlayer2Pieces()){
-            if(piece.getClass().equals(King.class))
-                king2 = true;
-        }
-        return king1 && king2;
-    }
 }
