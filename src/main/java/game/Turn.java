@@ -3,10 +3,12 @@ package game;
 import board.Board;
 import board.Spot;
 import characters.SpecialCharacters;
+import game.exceptions.CheckmateException;
 import game.exceptions.EmptySpotException;
 import game.exceptions.InvalidMoveException;
 import pieces.Piece;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,46 +25,34 @@ public class Turn {
         this.board = board;
     }
 
-    public void start(){
+    public void start() throws CheckmateException {
         boolean endTurn = false;
         Move move;
         ArrayList<String> playerArgs = null;
         board.renderBoard();
-        while(!endTurn){
+        while (!endTurn) {
 
             boolean check = player.inCheck;
 
-            // redundant?
-            if(check){
+            if(player.inCheck){
+                // check if checkmate
+                boolean checkmate = board.isCheckMate(player.checkingPieces, player);
+                if(checkmate){
+                    throw new CheckmateException("A Checkmate has occurred, Player " + player.checkingPieces.get(0).getPlayer() + " has won");
+                }
                 System.out.println("Player " + player.playerNum + ", you are in check");
-                boolean end = false;
-                while(!end) {
-                    playerArgs = player.makeCommand();
-                    try {
-                        processCommand(playerArgs, player);
-                    } catch (InvalidMoveException exception) {
-                        board.renderBoard();
-                        System.out.println(exception.getMessage());
-                        continue;
-                    }
-                    end = true;
-                    endTurn = true;
-                }
             }
-            else{
-                boolean end = false;
-                while(!end){
-                    playerArgs = player.makeCommand();
-                    try{
-                         end = processCommand(playerArgs, player);
-                    }
-                    catch (InvalidMoveException exception){
-                        board.renderBoard();
-                        System.out.println(exception.getMessage());
-                        continue;
-                    }
-                    endTurn = true;
+            boolean end = false;
+            while (!end) {
+                playerArgs = player.makeCommand();
+                try {
+                    end = !processCommand(playerArgs, player);
+                } catch (InvalidMoveException exception) {
+                    board.renderBoard();
+                    System.out.println(exception.getMessage());
+                    continue;
                 }
+                endTurn = true;
             }
         }
     }
@@ -93,9 +83,15 @@ public class Turn {
                     if(!success){
                         throw new InvalidMoveException("Castling now is illegal, please check your move");
                     }
+                    break;
+            }
+            case "F":{
+                if(player.inCheck)
+                    return false;
+                throw new InvalidMoveException("Can only forfeit a move when checkmated");
             }
         }
-        return true;
+        return false;
     }
 
     private boolean validateMove(ArrayList<int[]> coordinates) throws InvalidMoveException{
@@ -133,13 +129,15 @@ public class Turn {
                 valid = true;
         }
 
-        switch (board.isCheck(origin, destination, player)){
+        AbstractMap.SimpleEntry<Integer, ArrayList<Piece>> inCheck = board.isCheck(origin, destination, player);
+        switch (inCheck.getKey()){
             case 0:{
                 player.inCheck = false;
                 break;
             }
             case 1:{
                 opponent.inCheck = true;
+                opponent.checkingPieces = inCheck.getValue();
                 break;
             }
             case 2:{
@@ -149,6 +147,9 @@ public class Turn {
                 else
                     message = "Please make a move that would prevent you from being in check";
                 throw new InvalidMoveException(message);
+            }
+            case 3:{
+
             }
         }
 

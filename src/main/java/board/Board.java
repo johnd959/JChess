@@ -8,9 +8,7 @@ import game.exceptions.InvalidMoveException;
 import pieces.*;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -222,38 +220,39 @@ public class Board {
      * @param origin The location of the piece that is moving
      * @param destination The destination of the moving piece
      * @param player The player making the move under consideration
-     * @return 0 if neither player are in check<br>1 if the opponent is in check<br>2 if player is in check<br>3 if both are in
+     * @return Key is 0 if neither player are in check<br>1 if the opponent is in check<br>2 if player is in check<br>3 if both are in
      * check
      */
-    public int isCheck(int[] origin, int[] destination, Player player){
+    public AbstractMap.SimpleEntry<Integer, ArrayList<Piece>> isCheck(int[] origin, int[] destination, Player player) {
 
         boolean playerCheck = false;
         boolean opponentCheck = false;
 
+        Piece pieceAtDestination = null;
         //getting piece at destination for safekeeping if there is one
-        Piece pieceAtDestination;
-        try{
+
+        try {
             pieceAtDestination = this.getPieceAt(destination);
-        }catch (EmptySpotException exception){
+        } catch (EmptySpotException exception) {
             pieceAtDestination = null;
         }
 
         //moving piece to new location temporarily for checking
-        try{
+        try {
             this.movePiece(origin, destination);
-        }catch (InvalidMoveException exception){
+        } catch (InvalidMoveException exception) {
             // if the location is the same, return 0 because this would not affect check
-            return 0;
+            return null;
         }
 
 
         // getting all possible moves for current player
         ArrayList<Piece> allPlayerPieces = null;
         ArrayList<Piece> allOpponentPieces = null;
-        if(player.playerNum == 1){
+        if (player.playerNum == 1) {
             allPlayerPieces = this.getPlayer1Pieces();
             allOpponentPieces = this.getPlayer2Pieces();
-        }else{
+        } else {
             allPlayerPieces = this.getPlayer2Pieces();
             allOpponentPieces = this.getPlayer1Pieces();
         }
@@ -264,42 +263,49 @@ public class Board {
         //opponent's king
         Piece opponentKing = null;
 
+        //all pieces checking opponent king
+        ArrayList<Piece> piecesCheckingOpp = new ArrayList<>();
+
+
         //getting all moves for the player pieces
-        ArrayList<ArrayList<int[]>> allPlayerMoves = new ArrayList<>();
-        for(Piece piece : allPlayerPieces){
-            if(piece.name.equals("King")){
+        //ArrayList<ArrayList<int[]>> allPlayerMoves = new ArrayList<>();
+        for (Piece piece : allPlayerPieces) {
+//            piece.getNewMoves(spotMatrix);
+//            allPlayerMoves.add(piece.getMoves());
+            if (piece.name.equals("King")) {
                 playerKing = piece;
             }
-            piece.getNewMoves(spotMatrix);
-            allPlayerMoves.add(piece.getMoves());
         }
 
         // getting all moves for the opponent pieces
-        ArrayList<ArrayList<int[]>> allOpponentMoves = new ArrayList<>();
-        for(Piece piece : allOpponentPieces){
-            if(piece.name.equals("King")){
+        //ArrayList<ArrayList<int[]>> allOpponentMoves = new ArrayList<>();
+        for (Piece piece : allOpponentPieces) {
+//            piece.getNewMoves(spotMatrix);
+//            allOpponentMoves.add(piece.getMoves());
+            if (piece.name.equals("King")) {
                 opponentKing = piece;
             }
-            piece.getNewMoves(spotMatrix);
-            allOpponentMoves.add(piece.getMoves());
         }
 
         // checking if any of player moves coincide with the opponent's kings' position
         int[] opponentKingLocation = opponentKing.getLocation();
-        for(ArrayList<int[]> pieceMoves : allPlayerMoves){
-            for(int[] move : pieceMoves){
-                if(Arrays.equals(move, opponentKingLocation)){
+        for (Piece piece : allPlayerPieces) {
+            piece.getNewMoves(spotMatrix);
+            for (int[] move : piece.getMoves()) {
+                if (Arrays.equals(move, opponentKingLocation)) {
                     opponentCheck = true;
-                    break;
+                    piecesCheckingOpp.add(piece);
                 }
+
             }
         }
 
         //checking if any of opponent moves coincide with player's king's position
         int[] playerKingPosition = playerKing.getLocation();
-        for(ArrayList<int[]> pieceMoves : allOpponentMoves){
-            for(int[] move : pieceMoves){
-                if(Arrays.equals(move, playerKingPosition)){
+        for (Piece piece : allOpponentPieces) {
+            piece.getNewMoves(spotMatrix);
+            for (int[] move : piece.getMoves()) {
+                if (Arrays.equals(move, playerKingPosition)) {
                     playerCheck = true;
                     break;
                 }
@@ -307,29 +313,108 @@ public class Board {
         }
 
         //returning pieces to their original locations and removing pieceAtDestination from disqualified pieces if any
-        try{
+        try {
             this.movePiece(destination, origin);
-        }catch (InvalidMoveException exception){
+        } catch (InvalidMoveException exception) {
 
         }
 
-        if(pieceAtDestination != null) {
+        if (pieceAtDestination != null) {
             spotMatrix[destination[1]][destination[0]].piece = pieceAtDestination;
             this.getDisqualifiedPieces().remove(pieceAtDestination);
             player.getPieces().add(pieceAtDestination);
         }
 
 
+//        // returning coded ints
+//        if (playerCheck && opponentCheck)
+//            return 3;
+//        else if (playerCheck)
+//            return 2;
+//        else if (opponentCheck)
+//            return 1;
+//        else
+//            return 0;
 
-        // returning coded ints
-        if(playerCheck && opponentCheck)
-            return 3;
-        else if(playerCheck)
-            return 2;
-        else if(opponentCheck)
-            return 1;
-        else
-            return 0;
+        AbstractMap.SimpleEntry<Integer, ArrayList<Piece>> result;
+
+        if(playerCheck){
+            result = new AbstractMap.SimpleEntry<>(2, null);
+        }
+        else if(opponentCheck){
+            result = new AbstractMap.SimpleEntry<>(1, piecesCheckingOpp);
+        }
+        else{
+            result = new AbstractMap.SimpleEntry<>(0, null);
+        }
+        return result;
+
+    }
+
+    public boolean isCheckMate(ArrayList<Piece> piecesCheckingPlayer, Player player){
+
+        //base logic
+        //get all pieces whose valid moves would extend into the area created by pieces checking the king
+        // for all those pieces, check if that/those move(s) would prevent the king from being in check
+        // if yes then not checkmate
+        // if no then checkmate
+        //piecesCheckingPlayer is a list of all pieces checking the king
+
+        //List of moves (area) of pieces checking the king
+
+        //if player is in check
+        if(!player.inCheck){
+            return false;
+        }
+
+        ArrayList<int[]> areaInCheck = new ArrayList<>();
+        for(Piece piece : piecesCheckingPlayer){
+            piece.getNewMoves(spotMatrix);
+            areaInCheck.addAll(piece.getMoves());
+        }
+        // List of pieces that have a move that extends into the check area // triple for loop, yikes! But limited data set
+        // and the moves of those pieces
+        HashMap<Piece, ArrayList<int[]>> checkAreaCollisionMoves = new HashMap<Piece, ArrayList<int[]>>();
+
+        // for every piece that a player has
+        for(Piece piece : player.getPieces()){
+
+            //gets its moves
+            piece.getNewMoves(spotMatrix);
+            checkAreaCollisionMoves.put(piece, new ArrayList<>());
+
+            // for every move that that piece can make
+            for(int[] move : piece.getMoves()){
+
+                //for every spot in the checked area
+                for(int[] checkedArea : areaInCheck){
+
+                    // if the move that the piece can make coincides with a spot in that checked area
+                    if(Arrays.equals(checkedArea, move)){
+
+                        // add the move and associate it with the piece that can make it
+                        checkAreaCollisionMoves.get(piece).add(move);
+                    }
+                }
+            }
+        }
+
+        //for every piece that extends into the checked area
+        for(Map.Entry<Piece, ArrayList<int[]>> piece : checkAreaCollisionMoves.entrySet()){
+
+            // for every move of that piece
+            for(int[] move : piece.getValue()){
+
+                // check if making that move would put remove the king from check
+                if(isCheck(piece.getKey().getLocation(), move, player).getKey() == 0){
+                    // break out of all loops and return false if there is even one
+                    // move that prevents check
+                    return false;
+                }
+            }
+        }
+        // if none of the moves prevent check, then it is checkmate
+        return true;
     }
 
     public boolean castle(int[] rookLocation, Player player) throws InvalidMoveException {
@@ -398,7 +483,7 @@ public class Board {
 
         if(kingInSight){
             for(int[] move : horizontalMoves){
-                if(isCheck(kingLocation, move, player) != 0){
+                if(isCheck(kingLocation, move, player).getKey() != 0){
                     throw new InvalidMoveException("King will be in check at one point while castling");
                 }
             }
@@ -424,4 +509,5 @@ public class Board {
     public void setDisqualifiedPieces(ArrayList<Piece> disqualifiedPieces) {
         this.disqualifiedPieces = disqualifiedPieces;
     }
+
 }
