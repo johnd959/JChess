@@ -8,6 +8,7 @@ import game.exceptions.InvalidMoveException;
 import pieces.*;
 
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -36,6 +37,15 @@ public class Board {
         if(Arrays.equals(pieceLocation, newLocation))
             throw new InvalidMoveException("The destination " + Arrays.toString(pieceLocation) + " cannot be the same as the origin " + Arrays.toString(newLocation));
 
+        if((pieceLocation[1] > Board.height || pieceLocation[1] < 1) || (pieceLocation[0] > Board.width || pieceLocation[0] < 1)){
+            throw new InvalidMoveException("The spot of the piece to be moved specified is invalid");
+        }
+
+        if((newLocation[1] > Board.height || newLocation[1] < 1) || (newLocation[0] > Board.width || newLocation[0] < 1)){
+            throw new InvalidMoveException("The destination specified is invalid");
+        }
+
+
         Piece destinationPiece = spotMatrix[newLocation[1]][newLocation[0]].piece;
         Piece pieceToMove = spotMatrix[pieceLocation[1]][pieceLocation[0]].piece;
         spotMatrix[pieceLocation[1]][pieceLocation[0]].piece = null;
@@ -52,6 +62,40 @@ public class Board {
         pieceToMove.move(newLocation);
     }
 
+    public boolean replacePiece(Piece piece, int[] newLocation) throws InvalidMoveException{
+
+        // if the coordinates of the newLocation provided are off the board
+        if(newLocation[0] > Board.width || newLocation[0] < 1)
+            return false;
+
+        if(newLocation[1] > Board.height || newLocation[1] < 1)
+            return false;
+
+        //getting the piece at the destination
+        Piece pieceAtDestination = null;
+
+        try{
+            pieceAtDestination = getPieceAt(newLocation);
+        }catch (EmptySpotException exception){}
+
+        if(pieceAtDestination != null){
+
+            //removing the piece to be replaced from the board and updating the trackers
+            spotMatrix[newLocation[1]][newLocation[0]].piece = null;
+            disqualifiedPieces.add(pieceAtDestination);
+            if(pieceAtDestination.getPlayer() == 1)
+                player1Pieces.remove(pieceAtDestination);
+            else
+                player2Pieces.remove(pieceAtDestination);
+
+            //moving the new piece into place
+            spotMatrix[newLocation[1]][newLocation[0]].piece = piece;
+            piece.move(newLocation);
+        }
+
+        return true;
+    }
+
     /**
      *
      * @param pieceLocation The location of the piece to be moved
@@ -64,10 +108,16 @@ public class Board {
         try{
             selected = spotMatrix[pieceLocation[1]][pieceLocation[0]].piece;
             selected.getNewMoves(spotMatrix);
+            ArrayList<int[]> allAvailableMoves = selected.getMoves();
 
             //filtering out moves that collide with friendly pieces
-            for(int[] move : selected.getMoves()){
-                Piece collision = spotMatrix[move[1]][move[0]].piece;
+            for(int[] move : allAvailableMoves){
+                Piece collision = null;
+                if((move[1] > Board.height || move[1] < 1) || (move[0] > Board.width || move[0] < 1))
+                    continue;
+                else
+                    collision = spotMatrix[move[1]][move[0]].piece;
+
                 if(collision != null) {
                     if (collision.getPlayer() != selected.getPlayer())
                         availableMoves.add(move);
@@ -79,26 +129,6 @@ public class Board {
         }
         catch (NullPointerException exception){
             throw new InvalidMoveException("Spot is most likely empty");
-        }
-        return availableMoves;
-    }
-    /**
-     *
-     * @param pieceLocation The location of the piece to be moved
-     * @return An arraylist of all moves including the original collisions
-     */
-    public ArrayList<int[]> getRawMoves(int[] pieceLocation){
-
-        Piece selected = null;
-        ArrayList<int[]> availableMoves = null;
-        try{
-            selected = spotMatrix[pieceLocation[1]][pieceLocation[0]].piece;
-            selected.getNewMoves(spotMatrix);
-            availableMoves = selected.getMoves();
-
-        }
-        catch (NullPointerException exception){
-            System.out.println("Spot is empty");
         }
         return availableMoves;
     }
@@ -178,21 +208,21 @@ public class Board {
 
         //pieces for player 1
         addPiece(new Rook(new int[]{1,1}, 1));
-        //addPiece(new Knight(new int[]{2,1}, 1));
-        //addPiece(new Bishop(new int[]{3,1}, 1));
+        addPiece(new Knight(new int[]{2,1}, 1));
+        addPiece(new Bishop(new int[]{3,1}, 1));
         addPiece(new Queen(new int[]{4,1}, 1));
         addPiece(new King(new int[]{5,1}, 1));
-        //addPiece(new Bishop(new int[]{6,1}, 1));
-        //addPiece(new Knight(new int[]{7,1}, 1));
+        addPiece(new Bishop(new int[]{6,1}, 1));
+        addPiece(new Knight(new int[]{7,1}, 1));
         addPiece(new Rook(new int[]{8,1}, 1));
         for(int x = 1; x <= Board.width; x++){
             addPiece(new Pawn(new int[]{x, 2}, 1));
         }
 
         //pieces for player 2
-        //for(int x = 1; x <= Board.width; x++){
-        //    addPiece(new Pawn(new int[]{x, 7}, 2));
-        //}
+        for(int x = 1; x <= Board.width; x++){
+            addPiece(new Pawn(new int[]{x, 7}, 2));
+        }
         addPiece(new Rook(new int[]{1,8}, 2));
         addPiece(new Knight(new int[]{2,8}, 2));
         addPiece(new Bishop(new int[]{3,8}, 2));
@@ -287,6 +317,13 @@ public class Board {
             }
         }
 
+        // if playerKing or opponentKing is null after moving the piece, the king is in check
+        if(playerKing == null)
+            return new AbstractMap.SimpleEntry<>(2, null);
+        else if(opponentKing == null){
+            return new AbstractMap.SimpleEntry<>(1, piecesCheckingOpp);
+        }
+
         // checking if any of player moves coincide with the opponent's kings' position
         int[] opponentKingLocation = opponentKing.getLocation();
         for (Piece piece : allPlayerPieces) {
@@ -322,19 +359,12 @@ public class Board {
         if (pieceAtDestination != null) {
             spotMatrix[destination[1]][destination[0]].piece = pieceAtDestination;
             this.getDisqualifiedPieces().remove(pieceAtDestination);
-            player.getPieces().add(pieceAtDestination);
+            if(player.playerNum == 1){
+                player2Pieces.add(pieceAtDestination);
+            }else {
+                player1Pieces.add(pieceAtDestination);
+            }
         }
-
-
-//        // returning coded ints
-//        if (playerCheck && opponentCheck)
-//            return 3;
-//        else if (playerCheck)
-//            return 2;
-//        else if (opponentCheck)
-//            return 1;
-//        else
-//            return 0;
 
         AbstractMap.SimpleEntry<Integer, ArrayList<Piece>> result;
 
@@ -529,6 +559,57 @@ public class Board {
 
         return false;
 
+    }
+
+    public boolean exchange(int[] oldPiece, String newPieceType) throws InvalidMoveException{
+
+        Pawn piece;
+        try{
+            piece = (Pawn) getPieceAt(oldPiece);
+        }catch (Exception exception){
+            throw new InvalidMoveException("There is no pawn at the location specified");
+        }
+
+        //checking if the pawn specified is at the end of the board
+        if(piece.getLocation()[1] != 1 && piece.getLocation()[1] != 8)
+            throw new InvalidMoveException("The pawn specified is not eligible for an exchange at this point");
+
+        // instantiating the new piece
+        Piece newPiece = null;
+        Class pieceClass = null;
+        Constructor<?> newPieceConst;
+
+        try{
+            pieceClass = Class.forName("pieces." + newPieceType.strip());
+            newPieceConst = pieceClass.getConstructor(int[].class, int.class);
+        } catch (Exception exception){
+            throw new InvalidMoveException("There is no piece named " + newPieceType);
+        }
+
+
+        if(pieceClass != null)
+            try{
+                newPiece = (Piece) newPieceConst.newInstance(oldPiece, piece.getPlayer());
+            } catch (Exception exception){
+                throw new InvalidMoveException("Unable to exchange piece, please try again");
+            }
+
+
+
+        //if the new piece could not be instantiated
+        if(newPiece == null){
+            throw new InvalidMoveException("Cannot exchange " + Arrays.toString(oldPiece) + " for " + newPieceType);
+        }
+
+        // adding newly created piece to the trackers
+        if(piece.getPlayer() == 1){
+            player1Pieces.add(newPiece);
+        }else {
+            player2Pieces.add(newPiece);
+        }
+
+        // exchanging pieces
+        return replacePiece(newPiece, oldPiece);
     }
 
     public void setDisqualifiedPieces(ArrayList<Piece> disqualifiedPieces) {

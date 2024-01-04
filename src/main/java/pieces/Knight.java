@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Knight extends Piece{
 
     public Knight(int[] location, int player) {
-        super('\u265E', "Knight", new ArrayList<>(), location, player);
+        super("Knight", location, player);
         this.location = location;
         if (player == 1){
             display = '\u265E';

@@ -8,6 +8,8 @@ import java.util.Arrays;
 public abstract class Piece {
 
     public final String name;
+
+    public static final String[] availableNames = new String[]{"King", "Queen", "Rook", "Bishop", "Knight","Pawn"};
     public char display;
 
     protected int[] location;
@@ -25,10 +27,9 @@ public abstract class Piece {
 
     protected int moved;
 
-    public Piece(char display, String name, ArrayList<int[]> moves, int[] location, int player){
+    public Piece(String name, int[] location, int player){
         this.name = name;
-        this.display = display;
-        this.moves = moves;
+        this.moves = new ArrayList<>();
         this.location = location;
         this.player = player;
         this.moved = 0;

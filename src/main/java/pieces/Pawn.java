@@ -9,7 +9,7 @@ public class Pawn extends Piece {
     private int travelDistance = 2;
 
     public Pawn(int[] location, int player) {
-        super('\u265F', "Pawn", new ArrayList<>(), location, player );
+        super("Pawn",location, player );
         if (player == 1){
             display = '\u265F';
         }

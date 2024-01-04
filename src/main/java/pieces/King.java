@@ -10,7 +10,7 @@ public class King extends Piece {
     private static final int travelDistance = 1;
 
     public King(int[] location, int player) {
-        super('\u265A', "King", new ArrayList<>(), location, player);
+        super("King", location, player);
         this.location = location;
         if (player == 1){
             display = '\u265A';
