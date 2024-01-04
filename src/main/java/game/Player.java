@@ -29,8 +29,8 @@ public class Player {
 
     public ArrayList<String> makeCommand(){
         String message = "Player " + playerNum + " Please make a move" +
-                "\nEnter M and two coordinates to make a move — Enter C and the coordinate of a rook to castle" +
-                "\nEG. M A1 B2 (Move Piece at A1 to B2)";
+                "\nEnter M and two coordinates to make a move — Enter C and the coordinate of a rook to castle — Enter C to exchange a pawn" +
+                "\nEG. M A1 B2 (Move Piece at A1 to B2) — C A1 (Castle with rook at A1) — E A8 Queen (Exchange pawn at A8 with a Queen";
 
         ArrayList<String> arguments = getCommand(message);
         while(!(validateArguments(arguments, arguments.size()))){
@@ -86,14 +86,25 @@ public class Player {
                 break;
             }
             case 3:{
-                if(!(arguments.get(0).equals("M"))) {
-                    System.out.println("Invalid Command");
-                    return false;
+                if(arguments.get(0).equals("M")) {
+                    for(int i = 1; i < arguments.size(); i++){
+                        Matcher matcher = pattern.matcher(arguments.get(i));
+                        if(!(matcher.find())) {
+                            System.out.println("Coordinate format is invalid: " + arguments.get(i));
+                            return false;
+                        }
+                    }
                 }
-                for(int i = 1; i < arguments.size(); i++){
-                    Matcher matcher = pattern.matcher(arguments.get(i));
-                    if(!(matcher.find())) {
-                        System.out.println("Coordinate format is invalid: " + arguments.get(i));
+                else if(arguments.get(0).equals("E")){
+                    Matcher matcher = pattern.matcher(arguments.get(1));
+                    if(!(matcher.find())){
+                        System.out.println("Coordinate format is invalid: " + arguments.get(1));
+                        return false;
+                    }
+
+                    //checking if piece type is valid
+                    if(arguments.get(2).equalsIgnoreCase("king")) {
+                        System.out.println("A pawn cannot be exchanged for a king");
                         return false;
                     }
                 }

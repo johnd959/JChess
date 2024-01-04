@@ -61,11 +61,17 @@ public class Turn {
     public boolean processCommand(ArrayList<String> args, Player player) throws InvalidMoveException{
 
         // extracting coordinates from player command arguments
-        //converting the provided arguments to int coordinates
         ArrayList<String> stringCoords = new ArrayList<>();
         for(int i = 1; i < args.size(); i++){
-            stringCoords.add((args.get(i)));
+            //checking if the argument contains numbers
+            for(char letter : args.get(i).toCharArray()){
+                if((int) letter >= 48 && (int) letter <= 57)
+                    stringCoords.add(args.get(i));
+            }
+
         }
+
+        //converting the provided arguments to int coordinates
         ArrayList<int[]> moveCoordinates = convertCoordinates(stringCoords);
 
         switch (args.get(0)){
@@ -84,6 +90,15 @@ public class Turn {
                         throw new InvalidMoveException("Castling now is illegal, please check your move");
                     }
                     break;
+            }
+            case "E":{
+                boolean success = board.exchange(moveCoordinates.get(0),
+                        args.get(2).substring(0,1).toUpperCase() +
+                        args.get(2).substring(1).toLowerCase());
+                if(!success){
+                    throw new InvalidMoveException("The pawn location specified falls outside of the bounds of board");
+                }
+                break;
             }
             case "F":{
                 if(player.inCheck)
@@ -125,9 +140,15 @@ public class Turn {
 
         //validating the moves provided against the actual moves that can be performed by the piece selected
         for(int[] validMove : validMoves){
-            if(Arrays.equals(validMove, destination))
+            if(Arrays.equals(validMove, destination)) {
                 valid = true;
+                break;
+            }
         }
+
+        //if valid is false at this point, there is no point in checking making such a move would result in check
+        if(!valid)
+            return valid;
 
         AbstractMap.SimpleEntry<Integer, ArrayList<Piece>> inCheck = board.isCheck(origin, destination, player);
         switch (inCheck.getKey()){

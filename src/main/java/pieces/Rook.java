@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class Rook extends Piece{
     public Rook(int[] location, int player){
-        super('\u265C', "Rook", new ArrayList<>(), location, player);
+        super("Rook", location, player);
         if (player == 1){
             display = '\u265C';
         }

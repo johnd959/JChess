@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Queen extends Piece {
 
     public Queen(int[] location, int player){
-        super('\u265B', "Queen", new ArrayList<>(), location, player);
+        super("Queen",location, player);
         if (player == 1){
             display = '\u265B';
         }

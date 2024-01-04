@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Bishop extends Piece{
 
     public Bishop(int[] location, int player){
-        super('\u26D7',"Bishop", new ArrayList<>(), location, player);
+        super("Bishop", location, player);
         this.moves = new ArrayList<>();
         this.location = location;
         if (player == 1){
