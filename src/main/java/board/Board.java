@@ -7,8 +7,10 @@ import game.exceptions.EmptySpotException;
 import game.exceptions.InvalidMoveException;
 import pieces.*;
 
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -134,41 +136,49 @@ public class Board {
     }
 
     public void renderBoard(){
+        PrintStream printWriter = null;
+        try{
+            printWriter = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        } catch (Exception ex){
+            System.out.println("Game was not able to print board");
+            System.exit(1);
+        }
+
         System.out.println("\n");
         for(int y = Board.height; y >= 0; y--){
             for(int x = 0; x <= Board.width; x++){
                 if(x == 0 && y == 0){
-                    System.out.print(" ");
+                    printWriter.print(" ");
                 }
                 else if(x == 0){
-                    System.out.print(y);
+                    printWriter.print(y);
                 }
                 else if(y == 0){
-                    System.out.print((SpecialCharacters.letterSpace + ((char) (64 + x)) + SpecialCharacters.letterSpace));
+                    printWriter.print((SpecialCharacters.letterSpace + ((char) (64 + x)) + SpecialCharacters.letterSpace));
                 }
                 else if (spotMatrix[y][x].piece != null) {
-                    System.out.print(spotMatrix[y][x].piece.display);
+                    printWriter.print(spotMatrix[y][x].piece.display);
                 }
                 else{
-                    System.out.print(SpecialCharacters.emptySpot);
+                    printWriter.print(SpecialCharacters.emptySpot);
                 }
-                System.out.print(" | ");
+                printWriter.print(" | ");
             }
-            System.out.println();
+            printWriter.println();
         }
-        System.out.println();
-        System.out.print("Player 1: ");
+        printWriter.println();
+        printWriter.print("Player 1: ");
         for(Piece piece: disqualifiedPieces){
             if(piece.getPlayer() == 2)
-                System.out.print(piece.display + SpecialCharacters.letterSpace);
+                printWriter.print(piece.display + SpecialCharacters.letterSpace);
         }
         System.out.println();
         System.out.print("Player 2: ");
         for(Piece piece : disqualifiedPieces){
             if(piece.getPlayer() == 1)
-                System.out.print(piece.display + SpecialCharacters.letterSpace);
+                printWriter.print(piece.display + SpecialCharacters.letterSpace);
         }
-        System.out.println("\n");
+        printWriter.println("\n");
     }
 
     private void addPiece(Piece piece){

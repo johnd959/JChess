@@ -20,15 +20,6 @@ public class Main {
         Game game = new Game();
         game.StartGame();
 
-//        try{
-//            Class pieceClass = Class.forName("pieces." + "Queen");
-//            Constructor pieceCon = pieceClass.getConstructor(int[].class, int.class);
-//            Piece newPiece = (Piece) pieceCon.newInstance("King", new int[]{0,0}, 1);
-//        }catch (Exception exception){
-//            System.out.println(exception.getMessage());
-//        }
-
-
     }
 
 }

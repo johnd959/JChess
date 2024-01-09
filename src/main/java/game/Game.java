@@ -5,6 +5,8 @@ import game.exceptions.CheckmateException;
 import pieces.King;
 import pieces.Piece;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -22,7 +24,7 @@ public class Game {
 
 
     public void StartGame(){
-        System.out.println("Welcome to chess with myself (for now) \uD83D\uDE05");
+        System.out.println("Welcome to chess with myself (for now) ♞");
         boolean flipFlop = true;
         while(true){
             try{

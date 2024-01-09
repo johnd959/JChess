@@ -13,10 +13,12 @@ public class King extends Piece {
         super("King", location, player);
         this.location = location;
         if (player == 1){
-            display = '\u265A';
+            //display = '\u265A';
+            display = 'K';
         }
         else if (player == 2){
-            display = '\u2654';
+            //display = '\u2654';
+            display = 'k';
         }
     }
 
