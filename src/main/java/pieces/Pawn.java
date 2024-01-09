@@ -11,10 +11,12 @@ public class Pawn extends Piece {
     public Pawn(int[] location, int player) {
         super("Pawn",location, player );
         if (player == 1){
-            display = '\u265F';
+            //display = '\u265F';
+            display = 'P';
         }
         else if (player == 2){
-            display = '\u2659';
+            //display = '\u2659';
+            display = 'p';
         }
 
     }

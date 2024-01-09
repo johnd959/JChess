@@ -12,10 +12,13 @@ public class Bishop extends Piece{
         this.moves = new ArrayList<>();
         this.location = location;
         if (player == 1){
+            // temporary solution
             display = '\u265D';
+            display = 'B';
         }
         else if (player == 2){
-            display = '\u2657';
+            //display = '\u2657';
+            display = 'b';
         }
     }
     @Override

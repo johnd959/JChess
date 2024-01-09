@@ -10,10 +10,12 @@ public class Rook extends Piece{
     public Rook(int[] location, int player){
         super("Rook", location, player);
         if (player == 1){
-            display = '\u265C';
+            //display = '\u265C';
+            display = 'R';
         }
         else if (player == 2){
-            display = '\u2656';
+            //display = '\u2656';
+            display = 'r';
         }
     }
     @Override

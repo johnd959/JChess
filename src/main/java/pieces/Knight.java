@@ -11,10 +11,12 @@ public class Knight extends Piece{
         super("Knight", location, player);
         this.location = location;
         if (player == 1){
-            display = '\u265E';
+            //display = '\u265E';
+            display = 'N';
         }
         else if (player == 2){
-            display = '\u2658';
+            //display = '\u2658';
+            display = 'n';
         }
     }
 

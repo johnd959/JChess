@@ -10,10 +10,12 @@ public class Queen extends Piece {
     public Queen(int[] location, int player){
         super("Queen",location, player);
         if (player == 1){
-            display = '\u265B';
+            //display = '\u265B';
+            display = 'Q';
         }
         else if (player == 2){
-            display = '\u2655';
+            //display = '\u2655';
+            display = 'q';
         }
     }
     @Override
