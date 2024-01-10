@@ -38,8 +38,8 @@ and Player 1 is then prompted for a move. The game should alternate between Play
 ### Examples
 
 - Move piece at A2 to A4: M A2 A4
-- Castle left rook: C A1
-- Exchange pawn for a king: 
+- Castle left (A1) rook: C A1
+- Exchange pawn at A8 for a Queen: E A8 Queen
 
 Play until a checkmate!
 
